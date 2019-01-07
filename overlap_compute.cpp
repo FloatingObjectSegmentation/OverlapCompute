@@ -134,7 +134,7 @@ int main(int argc, char** argv)
 				}
 
 				// finally accept the point
-				acceptedPoints.insert(i);
+				acceptedPoints.insert(idx);
 			}
 		}
 	}
