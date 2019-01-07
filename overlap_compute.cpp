@@ -92,22 +92,30 @@ int main(int argc, char** argv)
 	std::vector<int> pointIdxRadiusSearch;
 	std::vector<float> pointRadiusSquaredDistance;
 	
+	///// HEART OF THE ALGORITHM
+
 	set<int> discardedPoints;
 	set<int> acceptedPoints;
-	for (int i = 0; i < points.size(); i++) {
+	for (int i = 0; i < centerPointIndices.size(); i++) {
 
-		if (discardedPoints.find(i) != discardedPoints.end())
+		int idx = centerPointIndices[i];
+
+		if (discardedPoints.find(idx) != discardedPoints.end())
 			continue; // don't investigate points that we have already discarded
 
-		if (kdtree.radiusSearch(cloud->points[i], radii[i], pointIdxRadiusSearch, pointRadiusSquaredDistance) > 0) {
+		if (kdtree.radiusSearch(cloud->points[idx], radii[i], pointIdxRadiusSearch, pointRadiusSquaredDistance) > 0) {
 			if (pointIdxRadiusSearch.empty()) {
 				// we are safe
+				acceptedPoints.insert(idx);
 			}
 			else {
 				// verify that it does not overlap with a point that we have already chosen
 				bool overlaps_with_already_accepted = false;
 				for (int j = 0; j < pointIdxRadiusSearch.size(); j++) {
-					if (acceptedPoints.find(pointIdxRadiusSearch[j]) != acceptedPoints.end()) 
+
+					int nbridx = CentralPointMap[pointIdxRadiusSearch[j]]; // index of the central point of the current point
+
+					if (acceptedPoints.find(nbridx) != acceptedPoints.end()) 
 					{
 						discardedPoints.insert(i);
 						overlaps_with_already_accepted = true;
@@ -120,8 +128,8 @@ int main(int argc, char** argv)
 
 				// if it has no accepted neighbors, then we discard all of them
 				for (int j = 0; j < pointIdxRadiusSearch.size(); j++) {
-					if (i == j) continue;
-					discardedPoints.insert(pointIdxRadiusSearch[j]);
+					int nbridx = CentralPointMap[pointIdxRadiusSearch[j]]; // index of the central point of the current point
+					discardedPoints.insert(nbridx);
 				}
 
 				// finally accept the point
