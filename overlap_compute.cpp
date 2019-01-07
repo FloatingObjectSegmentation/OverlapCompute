@@ -16,8 +16,8 @@
 using namespace std;
 
 #pragma region [configuration]
-string directory = "C:\\Users\\km\\Desktop\\MAG\\FloatingObjectFilter\\data";
-string file_name = "459_100.pcd";
+string directory = "C:\\Users\\km\\Desktop\\MAG\\FloatingObjectFilter\\data\\augmentables";
+string file_name = "kurac.txt";
 #pragma endregion
 
 #pragma region [auxiliary]
@@ -26,36 +26,54 @@ string file_name = "459_100.pcd";
 
 int main(int argc, char** argv) 
 {
-	if (argc == 3) {
+	/*if (argc == 3) {
 		directory = argv[1];
 		file_name = argv[2];
 	}
 	else {
 		return 1;
-	}
+	}*/
 
 
 	// read the input file <point maxdim> => 1.0,2.0,3.0 5.0
 	std::vector<pcl::PointXYZ> points;
+	std::vector<int> centerPointIndices;
+	std::map<int, int> CentralPointMap; // accepts index of any point and returns the central point index
 	std::vector<float> radii;
 
 	ifstream infile;
 	infile.open(directory + "\\" + file_name, ios::in);
 	string line;
+	int currIdx = 0;
 	while (getline(infile, line)) {
 		
+		// get the max dimension
 		std::vector<std::string> results;
 		boost::split(results, line, [](char c) {return c == ' '; });
-		float rbnn_r = atof(results[1].c_str);
-
-		results.clear();
-		boost::split(results, line, [](char c) {return c == ','; });
-		float x = atof(results[0].c_str);
-		float y = atof(results[1].c_str);
-		float z = atof(results[2].c_str);
-
-		points.push_back(pcl::PointXYZ(x, y, z));
+		float rbnn_r = atof(results[9].c_str());
 		radii.push_back(rbnn_r);
+
+		// get the central point
+		std::vector<std::string> centralPointStrings;
+		boost::split(centralPointStrings, results[0], [](char c) {return c == ','; });
+		float x = atof(centralPointStrings[0].c_str());
+		float y = atof(centralPointStrings[1].c_str());
+		float z = atof(centralPointStrings[2].c_str());
+		points.push_back(pcl::PointXYZ(x, y, z));
+		int currentCentralPointIndex = currIdx++;
+		CentralPointMap[currentCentralPointIndex] = currentCentralPointIndex;
+		centerPointIndices.push_back(currentCentralPointIndex);
+
+		// get the boundary points
+		for (int i = 1; i < 9; i++) {
+			std::vector<std::string> boundaryPointStrings;
+			boost::split(boundaryPointStrings, results[i], [] (char c) {return c == ','; });
+			float x = atof(boundaryPointStrings[0].c_str());
+			float y = atof(boundaryPointStrings[1].c_str());
+			float z = atof(boundaryPointStrings[2].c_str());
+			points.push_back(pcl::PointXYZ(x, y, z));
+			CentralPointMap[currIdx] = currentCentralPointIndex;
+		}
 	}
 	
 
@@ -75,6 +93,7 @@ int main(int argc, char** argv)
 	std::vector<float> pointRadiusSquaredDistance;
 	
 	set<int> discardedPoints;
+	set<int> acceptedPoints;
 	for (int i = 0; i < points.size(); i++) {
 
 		if (discardedPoints.find(i) != discardedPoints.end())
@@ -85,9 +104,28 @@ int main(int argc, char** argv)
 				// we are safe
 			}
 			else {
-				// add the overlapping point to the set of deleted points
-				for (int j = 0; j < pointIdxRadiusSearch.size(); j++)
+				// verify that it does not overlap with a point that we have already chosen
+				bool overlaps_with_already_accepted = false;
+				for (int j = 0; j < pointIdxRadiusSearch.size(); j++) {
+					if (acceptedPoints.find(pointIdxRadiusSearch[j]) != acceptedPoints.end()) 
+					{
+						discardedPoints.insert(i);
+						overlaps_with_already_accepted = true;
+						break;
+					}
+				}
+
+				// if it overlaps with one we already accepted, then we have to discard it and move on
+				if (overlaps_with_already_accepted) continue;
+
+				// if it has no accepted neighbors, then we discard all of them
+				for (int j = 0; j < pointIdxRadiusSearch.size(); j++) {
+					if (i == j) continue;
 					discardedPoints.insert(pointIdxRadiusSearch[j]);
+				}
+
+				// finally accept the point
+				acceptedPoints.insert(i);
 			}
 		}
 	}
