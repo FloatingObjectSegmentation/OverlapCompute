@@ -129,6 +129,7 @@ int main(int argc, char** argv)
 				// if it has no accepted neighbors, then we discard all of them
 				for (int j = 0; j < pointIdxRadiusSearch.size(); j++) {
 					int nbridx = CentralPointMap[pointIdxRadiusSearch[j]]; // index of the central point of the current point
+					if (nbridx == idx) continue;
 					discardedPoints.insert(nbridx);
 				}
 
