@@ -158,7 +158,7 @@ int main(int argc, char** argv)
 	for (auto & i : discardedPoints) {
 		ss << i << " ";
 	}
-	outfile << ss.str();
+	outfile << ss.str().substr(0, ss.str().length() - 1);
 	outfile.close();
 	cout << "results written to disc. Press any key to exit..." << endl;
 
