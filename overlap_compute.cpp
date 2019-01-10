@@ -27,11 +27,13 @@ problem specification: A program that receives an array of objects A defined in 
 					   The program picks a subset of objects in A, for which it is guaranteed that the objects within it do
 					   not overlap eachother.
 
-input: A list of records where each record is described as:
-	- central pivot point C [x,y,z] - represents the center or the origin of the object's coordinate frame
-	- list of boundary points B_i [x,y,z] - represents points on the boundary of the convex hull or boundary box of the object
-	- maximalDimension - the value of the longest dimension of the object
-output: A list of indices into the input list, indicating which objects should be discarded to remove overlapped objects.
+input: argv[1] = directory, argv[1] = filename. 
+	   A file containing A list of records where each record is described as:
+		- central pivot point C [x,y,z] - represents the center or the origin of the object's coordinate frame
+		- list of boundary points B_i [x,y,z] - represents points on the boundary of the convex hull or boundary box of the object
+		- maximalDimension - the value of the longest dimension of the object
+output: Write file to {argv[1]}/result{argv[2]} 
+	A list of indices into the input list, indicating which objects should be discarded to remove overlapped objects. (Each in new line)
 
 
 */
