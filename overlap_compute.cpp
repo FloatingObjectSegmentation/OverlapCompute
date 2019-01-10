@@ -16,23 +16,34 @@
 using namespace std;
 
 #pragma region [configuration]
-string directory = "C:\\Users\\km\\Desktop\\MAG\\FloatingObjectFilter\\data\\augmentables";
-string file_name = "kurac.txt";
+string directory = ""; //"C:\\Users\\km\\Desktop\\MAG\\FloatingObjectFilter\\data\\augmentables";
+string file_name = ""; //"some.txt";
 #pragma endregion
 
-#pragma region [auxiliary]
 
-#pragma endregion
+/*
 
+problem specification: A program that receives an array of objects A defined in 3D space that may be overlapping eachother.
+					   The program picks a subset of objects in A, for which it is guaranteed that the objects within it do
+					   not overlap eachother.
+
+input: A list of records where each record is described as:
+	- central pivot point C [x,y,z] - represents the center or the origin of the object's coordinate frame
+	- list of boundary points B_i [x,y,z] - represents points on the boundary of the convex hull or boundary box of the object
+	- maximalDimension - the value of the longest dimension of the object
+output: A list of indices into the input list, indicating which objects should be discarded to remove overlapped objects.
+
+
+*/
 int main(int argc, char** argv) 
 {
-	/*if (argc == 3) {
+	if (argc == 3) {
 		directory = argv[1];
 		file_name = argv[2];
 	}
 	else {
 		return 1;
-	}*/
+	}
 
 
 	// read the input file <point maxdim> => 1.0,2.0,3.0 5.0
@@ -78,8 +89,6 @@ int main(int argc, char** argv)
 	
 
 	// create the kd-tree and commit the computations
-
-	
 	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
 	for (int i = 0; i < points.size(); i++) {
 		cloud->push_back(points[i]);
