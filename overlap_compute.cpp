@@ -85,7 +85,7 @@ int main(int argc, char** argv)
 			float y = atof(boundaryPointStrings[1].c_str());
 			float z = atof(boundaryPointStrings[2].c_str());
 			points.push_back(pcl::PointXYZ(x, y, z));
-			CentralPointMap[currIdx] = currentCentralPointIndex;
+			CentralPointMap[currIdx++] = currentCentralPointIndex;
 		}
 	}
 	
