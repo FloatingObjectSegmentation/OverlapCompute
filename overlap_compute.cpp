@@ -16,8 +16,8 @@
 using namespace std;
 
 #pragma region [configuration]
-string directory = ""; //"C:\\Users\\km\\Desktop\\MAG\\FloatingObjectFilter\\data\\augmentables";
-string file_name = ""; //"some.txt";
+string directory = "E:\\workspaces\\LIDAR_WORKSPACE\\test\\";
+string file_name = "augs";
 #pragma endregion
 
 
@@ -39,13 +39,13 @@ output: Write file to {argv[1]}/result{argv[2]}
 */
 int main(int argc, char** argv) 
 {
-	if (argc == 3) {
+	/*if (argc == 3) {
 		directory = argv[1];
 		file_name = argv[2];
 	}
 	else {
 		return 1;
-	}
+	}*/
 
 
 	// read the input file <point maxdim> => 1.0,2.0,3.0 5.0
@@ -141,7 +141,7 @@ int main(int argc, char** argv)
 				for (int j = 0; j < pointIdxRadiusSearch.size(); j++) {
 					int nbridx = CentralPointMap[pointIdxRadiusSearch[j]]; // index of the central point of the current point
 					if (nbridx == idx) continue;
-					discardedPoints.insert(nbridx);
+					discardedPoints.insert(nbridx / 9); // indices are actually multiples of 9, as evidenced by the way we have inserted them into the points array
 				}
 
 				// finally accept the point
