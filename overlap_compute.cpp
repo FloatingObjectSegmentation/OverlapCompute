@@ -39,13 +39,13 @@ output: Write file to {argv[1]}/result{argv[2]}
 */
 int main(int argc, char** argv) 
 {
-	/*if (argc == 3) {
+	if (argc == 3) {
 		directory = argv[1];
 		file_name = argv[2];
 	}
 	else {
 		return 1;
-	}*/
+	}
 
 
 	// read the input file <point maxdim> => 1.0,2.0,3.0 5.0
